@@ -23,14 +23,18 @@ export class App {
   public navigate(route: string): void {
     switch (route) {
       case 'about':
-        this.renderPage(renderAboutUsPage());
+        this.renderPage(renderAboutUsPage((route: string) => this.navigate(route)));
         break;
       case 'catalog':
+        this.renderPage(
+          domHelper.createElement('div', { textContent: 'Catalog page (coming soon)' }),
+        );
         break;
       case 'cart':
+        this.renderPage(domHelper.createElement('div', { textContent: 'Cart page (coming soon)' }));
         break;
       default:
-        this.renderPage(renderAboutUsPage());
+        this.renderPage(renderAboutUsPage((route: string) => this.navigate(route)));
     }
   }
 

@@ -1,6 +1,5 @@
 import domHelper from '../../utils/dom-helper.ts';
-
-type NavigateCallback = (route: string) => void;
+import type { NavigateCallback } from '../../types/types.ts';
 
 type HeaderButton = {
   className: string;
