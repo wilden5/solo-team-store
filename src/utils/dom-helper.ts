@@ -1,12 +1,11 @@
 class DOMHelper {
-  static createElement<T extends HTMLElement>(
-    tagName: string,
-    props: Partial<T>,
+  static createElement<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    props?: Partial<HTMLElementTagNameMap[K]>,
     parentElement?: Element,
-  ): T | HTMLElement {
-    const element: HTMLElement = document.createElement(tagName);
+  ): HTMLElementTagNameMap[K] {
+    const element = document.createElement(tagName);
     parentElement?.appendChild(element);
-
     return Object.assign(element, props);
   }
 
