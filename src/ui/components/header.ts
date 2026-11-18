@@ -54,6 +54,7 @@ const createNavContent = (header: HTMLElement, onNavigate: NavigateCallback): HT
       type: button.type,
     });
 
+    buttonElement.dataset.route = button.route;
     buttonElement.addEventListener('click', () => onNavigate(button.route));
     domHelper.appendChildToElement(nav, buttonElement);
   });
