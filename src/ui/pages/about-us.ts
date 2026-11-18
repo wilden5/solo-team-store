@@ -85,15 +85,16 @@ const createAboutAuthorContent = (): HTMLElement => {
 
   const authorGithubText = domHelper.createElement('div', {
     className: 'about-author-github-text',
-    textContent: 'Denis Ivanchenko',
+    textContent: 'GitHub:',
   });
   domHelper.appendChildToElement(githubWrapper, authorGithubText);
 
   const authorGithubLink = domHelper.createElement('a', {
     className: 'about-author-github-link',
     href: 'https://github.com/wilden5',
-    textContent: 'GitHub:',
+    textContent: 'wilden5',
     target: '_blank',
+    rel: 'noopener noreferrer',
   });
   domHelper.appendChildToElement(githubWrapper, authorGithubLink);
 
