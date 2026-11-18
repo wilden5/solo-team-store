@@ -31,7 +31,7 @@ const createHeroContent = (onNavigate: NavigateCallback): HTMLElement => {
   });
   domHelper.appendChildToElement(aboutHero, heroBadge);
 
-  const heroTitle = domHelper.createElement('h1', {
+  const heroTitle = domHelper.createElement('h2', {
     className: 'about-hero-title',
     textContent: HERO_TITLE,
   });
