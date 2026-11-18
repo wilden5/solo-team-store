@@ -13,7 +13,9 @@ const AUTHOR_DESCRIPTION: string =
 
 const AUTHOR_PILLS: string[] = ['TypeScript', 'Vite', 'Vitest', 'GitHub Projects'];
 
-const HERO_BADGE: string = 'Final team task, built solo';
+const HERO_BADGE: string = 'RS School · Final project';
+
+const HERO_TITLE: string = 'Solo Team Store';
 
 const HERO_DESCRIPTION: string =
   'A small online store built as the final project of the RS School front-end course.';
@@ -28,6 +30,12 @@ const createHeroContent = (onNavigate: NavigateCallback): HTMLElement => {
     textContent: HERO_BADGE,
   });
   domHelper.appendChildToElement(aboutHero, heroBadge);
+
+  const heroTitle = domHelper.createElement('h1', {
+    className: 'about-hero-title',
+    textContent: HERO_TITLE,
+  });
+  domHelper.appendChildToElement(aboutHero, heroTitle);
 
   const heroDescription = domHelper.createElement('p', {
     className: 'about-hero-description',
