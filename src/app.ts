@@ -1,14 +1,18 @@
 import domHelper from './utils/dom-helper.ts';
 import { renderAboutUsPage } from './ui/pages/about-us.ts';
 import { renderHeader } from './ui/components/header.ts';
-import type { Product } from './types/product.ts';
+import type { Product, ProductStatus } from './types/product.ts';
 import { fetchAllProducts } from './api/products.ts';
+import { renderCatalogPage } from './ui/pages/catalog.ts';
 
 export class App {
   private readonly root: HTMLElement;
   private readonly mainContainer: HTMLElement;
   private readonly headerElement: HTMLElement;
   private products: Product[] = [];
+  private productsStatus: ProductStatus = 'loading';
+  private errorMessage: string | null = null;
+  private currentRoute: string = '';
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -26,13 +30,17 @@ export class App {
   }
 
   public navigate(route: string): void {
+    this.currentRoute = route;
+
     switch (route) {
       case 'about':
         this.renderPage(renderAboutUsPage((route: string) => this.navigate(route)));
         break;
       case 'catalog':
         this.renderPage(
-          domHelper.createElement('div', { textContent: 'Catalog page (coming soon)' }),
+          renderCatalogPage(this.productsStatus, this.products, this.errorMessage, () =>
+            this.loadProducts(),
+          ),
         );
         break;
       case 'cart':
@@ -59,11 +67,24 @@ export class App {
   }
 
   private async loadProducts(): Promise<void> {
+    this.productsStatus = 'loading';
+    this.errorMessage = null;
+    this.refreshCatalogIfActive();
+
     try {
       this.products = await fetchAllProducts();
-      console.log('Loaded items:', this.products);
+      this.productsStatus = 'loaded';
     } catch (error) {
-      console.error('Error during load:', error);
+      this.productsStatus = 'error';
+      this.errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    } finally {
+      this.refreshCatalogIfActive();
+    }
+  }
+
+  private refreshCatalogIfActive(): void {
+    if (this.currentRoute === 'catalog') {
+      this.navigate('catalog');
     }
   }
 }

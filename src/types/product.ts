@@ -58,3 +58,5 @@ export interface Product {
   category: string;
   image: string;
 }
+
+export type ProductStatus = 'loading' | 'error' | 'loaded';
