@@ -4,6 +4,7 @@ import { renderHeader } from './ui/components/header.ts';
 import type { Product, ProductStatus } from './types/product.ts';
 import { fetchAllProducts } from './api/products.ts';
 import { renderCatalogPage } from './ui/pages/catalog.ts';
+import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
 
 export class App {
   private readonly root: HTMLElement;
@@ -77,6 +78,7 @@ export class App {
     } catch (error) {
       this.productsStatus = 'error';
       this.errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.products = FALLBACK_PRODUCTS;
     } finally {
       this.refreshCatalogIfActive();
     }

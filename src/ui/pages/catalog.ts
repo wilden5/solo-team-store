@@ -13,7 +13,9 @@ const createErrorContent = (errorMessage: string | null, onRetry: () => void): H
 
   const message = domHelper.createElement('p', {
     className: 'catalog-error-message',
-    textContent: errorMessage ?? 'Failed to load products',
+    textContent: errorMessage
+      ? `API is unavailable (${errorMessage}). Showing cached catalog.`
+      : 'API is unavailable. Showing cached catalog.',
   });
   domHelper.appendChildToElement(wrapper, message);
 
@@ -79,6 +81,7 @@ export const renderCatalogPage = (
       break;
     case 'error':
       domHelper.appendChildToElement(container, createErrorContent(errorMessage, onRetry));
+      domHelper.appendChildToElement(container, createProductContainer(products));
       break;
     case 'loaded':
       domHelper.appendChildToElement(container, createProductContainer(products));
