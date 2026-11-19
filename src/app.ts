@@ -1,11 +1,14 @@
 import domHelper from './utils/dom-helper.ts';
 import { renderAboutUsPage } from './ui/pages/about-us.ts';
 import { renderHeader } from './ui/components/header.ts';
+import type { Product } from './types/product.ts';
+import { fetchAllProducts } from './api/products.ts';
 
 export class App {
   private readonly root: HTMLElement;
   private readonly mainContainer: HTMLElement;
   private readonly headerElement: HTMLElement;
+  private products: Product[] = [];
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -13,11 +16,13 @@ export class App {
     this.headerElement = renderHeader((route: string) => this.navigate(route));
   }
 
-  public init(): void {
+  public async init(): Promise<void> {
     domHelper.appendChildToElement(this.root, this.headerElement);
     domHelper.appendChildToElement(this.root, this.mainContainer);
 
     this.navigate('about');
+
+    await this.loadProducts();
   }
 
   public navigate(route: string): void {
@@ -51,5 +56,15 @@ export class App {
     buttons.forEach((button) => {
       button.classList.toggle('active', button.dataset.route === currentRoute);
     });
+  }
+
+  private async loadProducts(): Promise<void> {
+    try {
+      const response = await fetchAllProducts();
+      this.products = response.products;
+      console.log('Loaded items:', this.products);
+    } catch (error) {
+      console.error('Error during load:', error);
+    }
   }
 }
