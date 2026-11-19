@@ -1,10 +1,10 @@
-export interface ProductDimensions {
+interface ProductDimensions {
   width: number;
   height: number;
   depth: number;
 }
 
-export interface ProductReview {
+interface ProductReview {
   rating: number;
   comment: string;
   date: string;
@@ -12,14 +12,14 @@ export interface ProductReview {
   reviewerEmail: string;
 }
 
-export interface ProductMeta {
+interface ProductMeta {
   createdAt: string;
   updatedAt: string;
   barcode: string;
   qrCode: string;
 }
 
-export interface Product {
+export interface RawProduct {
   id: number;
   title: string;
   description: string;
@@ -44,9 +44,17 @@ export interface Product {
   thumbnail: string;
 }
 
-export interface ProductsResponse {
-  products: Product[];
+export interface RawProductsResponse {
+  products: RawProduct[];
   total: number;
   skip: number;
   limit: number;
+}
+
+export interface Product {
+  id: number;
+  title: string;
+  price: number;
+  category: string;
+  image: string;
 }

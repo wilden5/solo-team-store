@@ -60,8 +60,7 @@ export class App {
 
   private async loadProducts(): Promise<void> {
     try {
-      const response = await fetchAllProducts();
-      this.products = response.products;
+      this.products = await fetchAllProducts();
       console.log('Loaded items:', this.products);
     } catch (error) {
       console.error('Error during load:', error);
