@@ -34,7 +34,8 @@ const createProductContainer = (products: Product[]): HTMLElement => {
   const wrapper = domHelper.createElement('div', { className: 'products-wrapper' });
 
   products.forEach((product) => {
-    const productCard = domHelper.createElement('div', { className: `product-${product.id}` });
+    const productCard = domHelper.createElement('div', { className: `product-card` });
+    productCard.dataset.productId = String(product.id);
 
     const productTitle = domHelper.createElement('h3', {
       className: 'product-title',
@@ -55,7 +56,7 @@ const createProductContainer = (products: Product[]): HTMLElement => {
     domHelper.appendChildToElement(productCard, productCategory);
 
     const productImage = domHelper.createElement('img', {
-      className: `product-image`,
+      className: 'product-image',
       src: product.image,
       alt: `Product ${product.title}`,
     });
