@@ -1,5 +1,5 @@
 import domHelper from '../../utils/dom-helper.ts';
-import type { NavigateCallback } from '../../types/types.ts';
+import type { NavigateCallback } from '../../types/common.ts';
 
 const LIST_ITEMS_RAW: string[] = [
   'Product catalog with search, category and price filters',
