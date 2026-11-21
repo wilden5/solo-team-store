@@ -1,0 +1,79 @@
+import domHelper from '../../utils/dom-helper.ts';
+import type { CartItem } from '../../types/cart.ts';
+
+export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
+  const cartWrapper = domHelper.createElement('div', { className: 'cart-wrapper' });
+
+  cartItems.forEach((item) => {
+    const cartLine = domHelper.createElement('div', { className: 'cart-line' });
+
+    const productName = domHelper.createElement('div', {
+      className: 'product-name',
+      textContent: item.product.title,
+    });
+    domHelper.appendChildToElement(cartLine, productName);
+
+    const productPrice = domHelper.createElement('div', {
+      className: 'product-price',
+      textContent: `$${item.product.price}`,
+    });
+    domHelper.appendChildToElement(cartLine, productPrice);
+
+    const productQuantity = domHelper.createElement('div', {
+      className: 'product-quantity',
+      textContent: String(item.quantity),
+    });
+    domHelper.appendChildToElement(cartLine, productQuantity);
+
+    const cartLineTotalPrice = domHelper.createElement('div', {
+      className: 'cart-line-total-price',
+      textContent: `$${item.product.price * item.quantity}`,
+    });
+    domHelper.appendChildToElement(cartLine, cartLineTotalPrice);
+
+    const buttonsWrapper = domHelper.createElement('div', {
+      className: 'cart-buttons',
+    });
+
+    const increaseQuantityButton = domHelper.createElement('button', {
+      className: 'increase-quantity-button',
+      textContent: '+',
+      type: 'button',
+    });
+    increaseQuantityButton.addEventListener('click', () => {});
+    domHelper.appendChildToElement(buttonsWrapper, increaseQuantityButton);
+
+    const decreaseQuantityButton = domHelper.createElement('button', {
+      className: 'decrease-quantity-button',
+      textContent: '-',
+      type: 'button',
+    });
+    decreaseQuantityButton.addEventListener('click', () => {});
+    domHelper.appendChildToElement(buttonsWrapper, decreaseQuantityButton);
+
+    const removeButton = domHelper.createElement('button', {
+      className: 'remove-button',
+      textContent: 'Remove',
+      type: 'button',
+    });
+    removeButton.addEventListener('click', () => {});
+    domHelper.appendChildToElement(buttonsWrapper, removeButton);
+
+    domHelper.appendChildToElement(cartLine, buttonsWrapper);
+    domHelper.appendChildToElement(cartWrapper, cartLine);
+  });
+
+  const cartTotalPrice = domHelper.createElement('div', {
+    className: 'cart-total-price',
+    textContent: 'Total: $70',
+  });
+  domHelper.appendChildToElement(cartWrapper, cartTotalPrice);
+
+  const cartMessage = domHelper.createElement('div', {
+    className: 'cart-message',
+    textContent: 'Cart is empty',
+  });
+  domHelper.appendChildToElement(cartWrapper, cartMessage);
+
+  return cartWrapper;
+};
