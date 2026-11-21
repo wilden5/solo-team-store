@@ -61,3 +61,10 @@
 .catalog-retry-button:hover {
   background: var(--color-accent-dark);
 }
+
+/* Products grid */
+.products-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}

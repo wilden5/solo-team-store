@@ -38,6 +38,7 @@ export const renderCatalogPage = (
   onRetry: () => void,
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
+  const productCardsWrapper = domHelper.createElement('div', { className: 'products-wrapper' });
 
   switch (currentStatus) {
     case 'loading':
@@ -45,10 +46,12 @@ export const renderCatalogPage = (
       break;
     case 'error':
       domHelper.appendChildToElement(container, createErrorContent(errorMessage, onRetry));
-      domHelper.appendChildToElement(container, createProductCard(products));
+      domHelper.appendChildToElement(container, createProductCard(products, productCardsWrapper));
+      domHelper.appendChildToElement(container, productCardsWrapper);
       break;
     case 'loaded':
-      domHelper.appendChildToElement(container, createProductCard(products));
+      domHelper.appendChildToElement(container, createProductCard(products, productCardsWrapper));
+      domHelper.appendChildToElement(container, productCardsWrapper);
   }
 
   return container;

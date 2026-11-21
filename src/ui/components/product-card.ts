@@ -1,9 +1,7 @@
 import domHelper from '../../utils/dom-helper.ts';
 import type { Product } from '../../types/product.ts';
 
-export const createProductCard = (products: Product[]): HTMLElement => {
-  const wrapper = domHelper.createElement('div', { className: 'products-wrapper' });
-
+export const createProductCard = (products: Product[], wrapper: HTMLElement): HTMLElement => {
   products.forEach((product) => {
     const productCard = domHelper.createElement('div', { className: 'product-card' });
     productCard.dataset.productId = String(product.id);
