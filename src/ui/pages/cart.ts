@@ -36,7 +36,7 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
     });
 
     const increaseQuantityButton = domHelper.createElement('button', {
-      className: 'inrease-quantity-button',
+      className: 'increase-quantity-button',
       textContent: '+',
       type: 'button',
     });
