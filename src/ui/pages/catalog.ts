@@ -31,6 +31,17 @@ const createErrorContent = (errorMessage: string | null, onRetry: () => void): H
   return wrapper;
 };
 
+const createProductList = (products: Product[]): HTMLElement => {
+  const productCardsWrapper = domHelper.createElement('div', { className: 'products-wrapper' });
+
+  products.forEach((product) => {
+    const card = createProductCard(product);
+    domHelper.appendChildToElement(productCardsWrapper, card);
+  });
+
+  return productCardsWrapper;
+};
+
 export const renderCatalogPage = (
   currentStatus: ProductStatus,
   products: Product[],
@@ -46,11 +57,11 @@ export const renderCatalogPage = (
       break;
     case 'error':
       domHelper.appendChildToElement(container, createErrorContent(errorMessage, onRetry));
-      domHelper.appendChildToElement(container, createProductCard(products, productCardsWrapper));
+      domHelper.appendChildToElement(container, createProductList(products));
       domHelper.appendChildToElement(container, productCardsWrapper);
       break;
     case 'loaded':
-      domHelper.appendChildToElement(container, createProductCard(products, productCardsWrapper));
+      domHelper.appendChildToElement(container, createProductList(products));
       domHelper.appendChildToElement(container, productCardsWrapper);
   }
 
