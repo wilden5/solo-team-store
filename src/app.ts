@@ -5,6 +5,8 @@ import type { Product, ProductStatus } from './types/product.ts';
 import { fetchAllProducts } from './api/products.ts';
 import { renderCatalogPage } from './ui/pages/catalog.ts';
 import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
+import { MOCK_CART_ITEMS, renderCartPage } from './ui/pages/cart.ts';
+import type { CartItem } from './types/cart.ts';
 
 export class App {
   private readonly root: HTMLElement;
@@ -14,6 +16,7 @@ export class App {
   private productsStatus: ProductStatus = 'loading';
   private errorMessage: string | null = null;
   private currentRoute: string = '';
+  private cartItems: CartItem[] = MOCK_CART_ITEMS;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -45,7 +48,7 @@ export class App {
         );
         break;
       case 'cart':
-        this.renderPage(domHelper.createElement('div', { textContent: 'Cart page (coming soon)' }));
+        this.renderPage(renderCartPage(this.cartItems));
         break;
       default:
         this.renderPage(renderAboutUsPage((route: string) => this.navigate(route)));
