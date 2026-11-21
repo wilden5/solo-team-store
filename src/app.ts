@@ -5,8 +5,9 @@ import type { Product, ProductStatus } from './types/product.ts';
 import { fetchAllProducts } from './api/products.ts';
 import { renderCatalogPage } from './ui/pages/catalog.ts';
 import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
-import { MOCK_CART_ITEMS, renderCartPage } from './ui/pages/cart.ts';
+import { renderCartPage } from './ui/pages/cart.ts';
 import type { CartItem } from './types/cart.ts';
+import { MOCK_CART_ITEMS } from './mocks/cart-items.ts';
 
 export class App {
   private readonly root: HTMLElement;

@@ -1,29 +1,6 @@
 import domHelper from '../../utils/dom-helper.ts';
 import type { CartItem } from '../../types/cart.ts';
 
-export const MOCK_CART_ITEMS: CartItem[] = [
-  {
-    product: {
-      id: 1,
-      title: 'Test Product 1',
-      price: 25,
-      category: 'electronics',
-      image: '',
-    },
-    quantity: 2,
-  },
-  {
-    product: {
-      id: 2,
-      title: 'Test Product 2',
-      price: 20,
-      category: 'beauty',
-      image: '',
-    },
-    quantity: 1,
-  },
-];
-
 export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
   const cartWrapper = domHelper.createElement('div', { className: 'cart-wrapper' });
 
@@ -50,12 +27,12 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
 
     const cartLineTotalPrice = domHelper.createElement('div', {
       className: 'cart-line-total-price',
+      textContent: `$${item.product.price * item.quantity}`,
     });
     domHelper.appendChildToElement(cartLine, cartLineTotalPrice);
 
     const buttonsWrapper = domHelper.createElement('div', {
       className: 'cart-buttons',
-      textContent: `$${item.product.price * item.quantity}`,
     });
 
     const increaseQuantityButton = domHelper.createElement('button', {
@@ -76,7 +53,7 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
 
     const removeButton = domHelper.createElement('button', {
       className: 'remove-button',
-      textContent: '-',
+      textContent: 'Remove',
       type: 'button',
     });
     removeButton.addEventListener('click', () => {});
@@ -88,7 +65,7 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
 
   const cartTotalPrice = domHelper.createElement('div', {
     className: 'cart-total-price',
-    textContent: 'Total: $50',
+    textContent: 'Total: $70',
   });
   domHelper.appendChildToElement(cartWrapper, cartTotalPrice);
 
