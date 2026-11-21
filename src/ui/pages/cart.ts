@@ -63,9 +63,11 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
     domHelper.appendChildToElement(cartWrapper, cartLine);
   });
 
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
   const cartTotalPrice = domHelper.createElement('div', {
     className: 'cart-total-price',
-    textContent: 'Total: $70',
+    textContent: `Total: $${totalPrice}`,
   });
   domHelper.appendChildToElement(cartWrapper, cartTotalPrice);
 
