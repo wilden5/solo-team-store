@@ -33,6 +33,14 @@ export const createProductCard = (products: Product[]): HTMLElement => {
     });
     domHelper.appendChildToElement(productCard, productImage);
 
+    const addToCartButton = domHelper.createElement('button', {
+      className: 'add-to-cart-button',
+      textContent: 'Add to cart',
+      type: 'button',
+    });
+    addToCartButton.addEventListener('click', () => {});
+    domHelper.appendChildToElement(productCard, addToCartButton);
+
     domHelper.appendChildToElement(wrapper, productCard);
   });
 
