@@ -18,6 +18,6 @@ const mapRawProductToProduct = (raw: RawProduct): Product => {
     title: raw.title,
     price: raw.price,
     category: raw.category,
-    image: raw.thumbnail || raw.images[0] || '',
+    image: raw.thumbnail || raw.images?.[0] || '',
   };
 };

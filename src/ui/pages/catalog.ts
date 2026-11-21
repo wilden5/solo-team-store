@@ -34,7 +34,7 @@ const createProductContainer = (products: Product[]): HTMLElement => {
   const wrapper = domHelper.createElement('div', { className: 'products-wrapper' });
 
   products.forEach((product) => {
-    const productCard = domHelper.createElement('div', { className: `product-card` });
+    const productCard = domHelper.createElement('div', { className: 'product-card' });
     productCard.dataset.productId = String(product.id);
 
     const productTitle = domHelper.createElement('h3', {
