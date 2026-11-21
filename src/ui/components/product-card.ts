@@ -1,7 +1,10 @@
 import domHelper from '../../utils/dom-helper.ts';
 import type { Product } from '../../types/product.ts';
 
-export const createProductCard = (product: Product): HTMLElement => {
+export const createProductCard = (
+  product: Product,
+  onAddToCart: (product: Product) => void,
+): HTMLElement => {
   const productCard = domHelper.createElement('div', { className: 'product-card' });
   productCard.dataset.productId = String(product.id);
 
@@ -35,7 +38,9 @@ export const createProductCard = (product: Product): HTMLElement => {
     textContent: 'Add to cart',
     type: 'button',
   });
-  addToCartButton.addEventListener('click', () => {});
+  addToCartButton.addEventListener('click', () => {
+    onAddToCart(product);
+  });
   domHelper.appendChildToElement(productCard, addToCartButton);
 
   return productCard;

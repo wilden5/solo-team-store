@@ -7,7 +7,7 @@ import { renderCatalogPage } from './ui/pages/catalog.ts';
 import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
 import { renderCartPage } from './ui/pages/cart.ts';
 import type { CartItem } from './types/cart.ts';
-import { MOCK_CART_ITEMS } from './mocks/cart-items.ts';
+import { addToCart } from './core/cart.ts';
 
 export class App {
   private readonly root: HTMLElement;
@@ -17,7 +17,7 @@ export class App {
   private productsStatus: ProductStatus = 'loading';
   private errorMessage: string | null = null;
   private currentRoute: string = '';
-  private cartItems: CartItem[] = MOCK_CART_ITEMS;
+  private cartItems: CartItem[] = [];
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -43,8 +43,12 @@ export class App {
         break;
       case 'catalog':
         this.renderPage(
-          renderCatalogPage(this.productsStatus, this.products, this.errorMessage, () =>
-            this.loadProducts(),
+          renderCatalogPage(
+            this.productsStatus,
+            this.products,
+            this.errorMessage,
+            () => this.loadProducts(),
+            (product: Product) => (this.cartItems = addToCart(this.cartItems, product)),
           ),
         );
         break;

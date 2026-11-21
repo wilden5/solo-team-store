@@ -31,11 +31,14 @@ const createErrorContent = (errorMessage: string | null, onRetry: () => void): H
   return wrapper;
 };
 
-const createProductList = (products: Product[]): HTMLElement => {
+const createProductList = (
+  products: Product[],
+  onAddToCart: (product: Product) => void,
+): HTMLElement => {
   const productCardsWrapper = domHelper.createElement('div', { className: 'products-wrapper' });
 
   products.forEach((product) => {
-    const card = createProductCard(product);
+    const card = createProductCard(product, onAddToCart);
     domHelper.appendChildToElement(productCardsWrapper, card);
   });
 
@@ -47,9 +50,9 @@ export const renderCatalogPage = (
   products: Product[],
   errorMessage: string | null,
   onRetry: () => void,
+  onAddToCart: (product: Product) => void,
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
-  const productCardsWrapper = domHelper.createElement('div', { className: 'products-wrapper' });
 
   switch (currentStatus) {
     case 'loading':
@@ -57,12 +60,10 @@ export const renderCatalogPage = (
       break;
     case 'error':
       domHelper.appendChildToElement(container, createErrorContent(errorMessage, onRetry));
-      domHelper.appendChildToElement(container, createProductList(products));
-      domHelper.appendChildToElement(container, productCardsWrapper);
+      domHelper.appendChildToElement(container, createProductList(products, onAddToCart));
       break;
     case 'loaded':
-      domHelper.appendChildToElement(container, createProductList(products));
-      domHelper.appendChildToElement(container, productCardsWrapper);
+      domHelper.appendChildToElement(container, createProductList(products, onAddToCart));
   }
 
   return container;
