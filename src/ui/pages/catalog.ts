@@ -1,5 +1,6 @@
 import type { Product, ProductStatus } from '../../types/product.ts';
 import domHelper from '../../utils/dom-helper.ts';
+import { createProductCard } from '../components/product-card.ts';
 
 const createSpinner = (): HTMLElement => {
   return domHelper.createElement('div', {
@@ -30,44 +31,6 @@ const createErrorContent = (errorMessage: string | null, onRetry: () => void): H
   return wrapper;
 };
 
-const createProductContainer = (products: Product[]): HTMLElement => {
-  const wrapper = domHelper.createElement('div', { className: 'products-wrapper' });
-
-  products.forEach((product) => {
-    const productCard = domHelper.createElement('div', { className: 'product-card' });
-    productCard.dataset.productId = String(product.id);
-
-    const productTitle = domHelper.createElement('h3', {
-      className: 'product-title',
-      textContent: product.title,
-    });
-    domHelper.appendChildToElement(productCard, productTitle);
-
-    const productPrice = domHelper.createElement('div', {
-      className: 'product-price',
-      textContent: `$${product.price}`,
-    });
-    domHelper.appendChildToElement(productCard, productPrice);
-
-    const productCategory = domHelper.createElement('div', {
-      className: 'product-category',
-      textContent: product.category,
-    });
-    domHelper.appendChildToElement(productCard, productCategory);
-
-    const productImage = domHelper.createElement('img', {
-      className: 'product-image',
-      src: product.image,
-      alt: `Product ${product.title}`,
-    });
-    domHelper.appendChildToElement(productCard, productImage);
-
-    domHelper.appendChildToElement(wrapper, productCard);
-  });
-
-  return wrapper;
-};
-
 export const renderCatalogPage = (
   currentStatus: ProductStatus,
   products: Product[],
@@ -75,6 +38,7 @@ export const renderCatalogPage = (
   onRetry: () => void,
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
+  const productCardsWrapper = domHelper.createElement('div', { className: 'products-wrapper' });
 
   switch (currentStatus) {
     case 'loading':
@@ -82,10 +46,12 @@ export const renderCatalogPage = (
       break;
     case 'error':
       domHelper.appendChildToElement(container, createErrorContent(errorMessage, onRetry));
-      domHelper.appendChildToElement(container, createProductContainer(products));
+      domHelper.appendChildToElement(container, createProductCard(products, productCardsWrapper));
+      domHelper.appendChildToElement(container, productCardsWrapper);
       break;
     case 'loaded':
-      domHelper.appendChildToElement(container, createProductContainer(products));
+      domHelper.appendChildToElement(container, createProductCard(products, productCardsWrapper));
+      domHelper.appendChildToElement(container, productCardsWrapper);
   }
 
   return container;
