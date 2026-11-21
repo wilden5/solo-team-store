@@ -7,6 +7,7 @@ import { renderCatalogPage } from './ui/pages/catalog.ts';
 import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
 import { renderCartPage } from './ui/pages/cart.ts';
 import type { CartItem } from './types/cart.ts';
+import { addToCart } from './core/cart.ts';
 
 export class App {
   private readonly root: HTMLElement;
@@ -47,7 +48,7 @@ export class App {
             this.products,
             this.errorMessage,
             () => this.loadProducts(),
-            (product: Product) => this.addToCart(product),
+            (product: Product) => addToCart(product, this.cartItems),
           ),
         );
         break;
@@ -94,16 +95,6 @@ export class App {
   private refreshCatalogIfActive(): void {
     if (this.currentRoute === 'catalog') {
       this.navigate('catalog');
-    }
-  }
-
-  private addToCart(product: Product): void {
-    const existingItem = this.cartItems.find((item) => item.product.id === product.id);
-
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      this.cartItems.push({ product, quantity: 1 });
     }
   }
 }

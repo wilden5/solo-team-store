@@ -53,7 +53,6 @@ export const renderCatalogPage = (
   onAddToCart: (product: Product) => void,
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
-  const productCardsWrapper = domHelper.createElement('div', { className: 'products-wrapper' });
 
   switch (currentStatus) {
     case 'loading':
@@ -62,11 +61,9 @@ export const renderCatalogPage = (
     case 'error':
       domHelper.appendChildToElement(container, createErrorContent(errorMessage, onRetry));
       domHelper.appendChildToElement(container, createProductList(products, onAddToCart));
-      domHelper.appendChildToElement(container, productCardsWrapper);
       break;
     case 'loaded':
       domHelper.appendChildToElement(container, createProductList(products, onAddToCart));
-      domHelper.appendChildToElement(container, productCardsWrapper);
   }
 
   return container;
