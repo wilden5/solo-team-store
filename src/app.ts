@@ -48,7 +48,7 @@ export class App {
             this.products,
             this.errorMessage,
             () => this.loadProducts(),
-            (product: Product) => addToCart(product, this.cartItems),
+            (product: Product) => (this.cartItems = addToCart(this.cartItems, product)),
           ),
         );
         break;
