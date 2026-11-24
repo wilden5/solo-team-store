@@ -10,6 +10,15 @@ export const renderCartPage = (
 
   const cartWrapper = domHelper.createElement('div', { className: 'cart-wrapper' });
 
+  const cartTotalPrice = domHelper.createElement('div', {
+    className: 'cart-total-price',
+  });
+
+  const cartMessage = domHelper.createElement('div', {
+    className: 'cart-message',
+    textContent: 'Cart is empty',
+  });
+
   const updateCartSummary = (): void => {
     const total = currentItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
     cartTotalPrice.textContent = `Total: $${total.toFixed(2)}`;
@@ -41,7 +50,7 @@ export const renderCartPage = (
 
     const cartLineTotalPrice = domHelper.createElement('div', {
       className: 'cart-line-total-price',
-      textContent: `$${item.product.price * item.quantity}`,
+      textContent: `$${(item.product.price * item.quantity).toFixed(2)}`,
     });
     domHelper.appendChildToElement(cartLine, cartLineTotalPrice);
 
@@ -89,21 +98,7 @@ export const renderCartPage = (
     domHelper.appendChildToElement(cartWrapper, cartLine);
   });
 
-  const totalPrice: number = initialCartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0,
-  );
-
-  const cartTotalPrice = domHelper.createElement('div', {
-    className: 'cart-total-price',
-    textContent: `Total: $${totalPrice}`,
-  });
   domHelper.appendChildToElement(cartWrapper, cartTotalPrice);
-
-  const cartMessage = domHelper.createElement('div', {
-    className: 'cart-message',
-    textContent: 'Cart is empty',
-  });
   domHelper.appendChildToElement(cartWrapper, cartMessage);
 
   updateCartSummary();
