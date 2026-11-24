@@ -9,10 +9,12 @@ import {
 
 export const renderCartPage = (
   initialCartItems: CartItem[],
+  initialPromoCode: string | null,
   onRemove: (item: CartItem) => CartItem[],
+  onApplyPromo: (code: string) => void,
 ): HTMLElement => {
   let currentItems = initialCartItems;
-  let appliedPromoCode: string | null = null;
+  let appliedPromoCode: string | null = initialPromoCode;
 
   const cartDiscount = domHelper.createElement('div', {
     className: 'cart-discount',
@@ -122,8 +124,9 @@ export const renderCartPage = (
   domHelper.appendChildToElement(cartWrapper, cartMessage);
 
   updateCartSummary();
-  createCouponMarkup(cartWrapper, (validCode) => {
+  createCouponMarkup(cartWrapper, appliedPromoCode, (validCode) => {
     appliedPromoCode = validCode;
+    onApplyPromo(validCode);
     updateCartSummary();
   });
 
@@ -139,11 +142,16 @@ const updateRowUI = (
   cartLineTotalPrice.textContent = `$${(item.product.price * item.quantity).toFixed(2)}`;
 };
 
-const createCouponMarkup = (wrapper: HTMLElement, onApplyPromo: (code: string) => void): void => {
+const createCouponMarkup = (
+  wrapper: HTMLElement,
+  initialPromoCode: string | null,
+  onApplyPromo: (code: string) => void,
+): void => {
   const couponWrapper = domHelper.createElement('div', { className: 'coupon-wrapper' });
   const couponInput = domHelper.createElement('input', {
     className: 'coupon-input',
     type: 'text',
+    value: initialPromoCode ?? '',
   });
   domHelper.appendChildToElement(couponWrapper, couponInput);
 
@@ -156,6 +164,9 @@ const createCouponMarkup = (wrapper: HTMLElement, onApplyPromo: (code: string) =
 
   const couponMessage = domHelper.createElement('div', {
     className: 'coupon-message',
+    textContent: initialPromoCode
+      ? `Promo code ${initialPromoCode} applied!`
+      : 'Enter the promo-code',
   });
   domHelper.appendChildToElement(couponWrapper, couponMessage);
 

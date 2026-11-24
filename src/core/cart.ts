@@ -1,6 +1,8 @@
 import type { Product } from '../types/product.ts';
 import type { CartItem, CartTotals } from '../types/cart.ts';
 
+const PROMO_CODE = 'SALE10';
+
 export const addToCart = (cartItems: CartItem[], product: Product): CartItem[] => {
   const isProductInCart = cartItems.some((item) => item.product.id === product.id);
 
@@ -32,7 +34,7 @@ export const calculateCartTotals = (
   appliedPromoCode: string | null,
 ): CartTotals => {
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const discountRate = appliedPromoCode === 'SALE10' ? 0.1 : 0;
+  const discountRate = appliedPromoCode === PROMO_CODE ? 0.1 : 0;
   const discountAmount = subtotal * discountRate;
   const finalTotal = subtotal - discountAmount;
 
@@ -44,5 +46,5 @@ export const calculateCartTotals = (
 };
 
 export const isValidPromoCode = (code: string): boolean => {
-  return code.trim().toUpperCase() === 'SALE10';
+  return code.trim().toUpperCase() === PROMO_CODE;
 };
