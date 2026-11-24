@@ -152,6 +152,8 @@ const createCouponMarkup = (
     className: 'coupon-input',
     type: 'text',
     value: initialPromoCode ?? '',
+    placeholder: 'Promo code',
+    ariaLabel: 'Promo code',
   });
   domHelper.appendChildToElement(couponWrapper, couponInput);
 
