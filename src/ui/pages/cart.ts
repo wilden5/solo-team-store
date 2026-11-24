@@ -1,10 +1,33 @@
 import domHelper from '../../utils/dom-helper.ts';
 import type { CartItem } from '../../types/cart.ts';
+import { decreaseItemQuantity, increaseItemQuantity } from '../../core/cart.ts';
 
-export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
+export const renderCartPage = (
+  initialCartItems: CartItem[],
+  onRemove: (item: CartItem) => CartItem[],
+): HTMLElement => {
+  let currentItems = initialCartItems;
+
   const cartWrapper = domHelper.createElement('div', { className: 'cart-wrapper' });
 
-  cartItems.forEach((item) => {
+  const cartTotalPrice = domHelper.createElement('div', {
+    className: 'cart-total-price',
+  });
+
+  const cartMessage = domHelper.createElement('div', {
+    className: 'cart-message',
+    textContent: 'Cart is empty',
+  });
+
+  const updateCartSummary = (): void => {
+    const total = currentItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    cartTotalPrice.textContent = `Total: $${total.toFixed(2)}`;
+
+    cartMessage.style.display = currentItems.length === 0 ? 'block' : 'none';
+    cartTotalPrice.style.display = currentItems.length === 0 ? 'none' : 'block';
+  };
+
+  initialCartItems.forEach((item) => {
     const cartLine = domHelper.createElement('div', { className: 'cart-line' });
 
     const productName = domHelper.createElement('div', {
@@ -27,7 +50,7 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
 
     const cartLineTotalPrice = domHelper.createElement('div', {
       className: 'cart-line-total-price',
-      textContent: `$${item.product.price * item.quantity}`,
+      textContent: `$${(item.product.price * item.quantity).toFixed(2)}`,
     });
     domHelper.appendChildToElement(cartLine, cartLineTotalPrice);
 
@@ -40,7 +63,11 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
       textContent: '+',
       type: 'button',
     });
-    increaseQuantityButton.addEventListener('click', () => {});
+    increaseQuantityButton.addEventListener('click', () => {
+      increaseItemQuantity(item);
+      updateRowUI(item, productQuantity, cartLineTotalPrice);
+      updateCartSummary();
+    });
     domHelper.appendChildToElement(buttonsWrapper, increaseQuantityButton);
 
     const decreaseQuantityButton = domHelper.createElement('button', {
@@ -48,7 +75,11 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
       textContent: '-',
       type: 'button',
     });
-    decreaseQuantityButton.addEventListener('click', () => {});
+    decreaseQuantityButton.addEventListener('click', () => {
+      decreaseItemQuantity(item);
+      updateRowUI(item, productQuantity, cartLineTotalPrice);
+      updateCartSummary();
+    });
     domHelper.appendChildToElement(buttonsWrapper, decreaseQuantityButton);
 
     const removeButton = domHelper.createElement('button', {
@@ -56,26 +87,30 @@ export const renderCartPage = (cartItems: CartItem[]): HTMLElement => {
       textContent: 'Remove',
       type: 'button',
     });
-    removeButton.addEventListener('click', () => {});
+    removeButton.addEventListener('click', () => {
+      cartLine.remove();
+      currentItems = onRemove(item);
+      updateCartSummary();
+    });
     domHelper.appendChildToElement(buttonsWrapper, removeButton);
 
     domHelper.appendChildToElement(cartLine, buttonsWrapper);
     domHelper.appendChildToElement(cartWrapper, cartLine);
   });
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-
-  const cartTotalPrice = domHelper.createElement('div', {
-    className: 'cart-total-price',
-    textContent: `Total: $${totalPrice}`,
-  });
   domHelper.appendChildToElement(cartWrapper, cartTotalPrice);
-
-  const cartMessage = domHelper.createElement('div', {
-    className: 'cart-message',
-    textContent: 'Cart is empty',
-  });
   domHelper.appendChildToElement(cartWrapper, cartMessage);
 
+  updateCartSummary();
+
   return cartWrapper;
+};
+
+const updateRowUI = (
+  item: CartItem,
+  quantityElement: HTMLDivElement,
+  cartLineTotalPrice: HTMLDivElement,
+): void => {
+  quantityElement.textContent = String(item.quantity);
+  cartLineTotalPrice.textContent = `$${(item.product.price * item.quantity).toFixed(2)}`;
 };

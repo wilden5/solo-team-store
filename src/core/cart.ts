@@ -12,3 +12,17 @@ export const addToCart = (cartItems: CartItem[], product: Product): CartItem[] =
 
   return [...cartItems, { product, quantity: 1 }];
 };
+
+export const increaseItemQuantity = (item: CartItem): void => {
+  item.quantity = item.quantity + 1;
+};
+
+export const decreaseItemQuantity = (item: CartItem): void => {
+  if (item.quantity > 1) {
+    item.quantity = item.quantity - 1;
+  }
+};
+
+export const removeFromCart = (item: CartItem, cart: CartItem[]): CartItem[] => {
+  return cart.filter((cartItem) => cartItem.product.id !== item.product.id);
+};
