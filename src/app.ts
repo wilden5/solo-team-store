@@ -18,6 +18,7 @@ export class App {
   private errorMessage: string | null = null;
   private currentRoute: string = '';
   private cartItems: CartItem[] = [];
+  private appliedPromoCode: string | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -54,7 +55,12 @@ export class App {
         break;
       case 'cart':
         this.renderPage(
-          renderCartPage(this.cartItems, (item: CartItem) => this.handleRemoveItem(item)),
+          renderCartPage(
+            this.cartItems,
+            this.appliedPromoCode,
+            (item: CartItem) => this.handleRemoveItem(item),
+            (code: string) => (this.appliedPromoCode = code),
+          ),
         );
         break;
       default:

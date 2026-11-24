@@ -1,12 +1,24 @@
 import domHelper from '../../utils/dom-helper.ts';
 import type { CartItem } from '../../types/cart.ts';
-import { decreaseItemQuantity, increaseItemQuantity } from '../../core/cart.ts';
+import {
+  calculateCartTotals,
+  decreaseItemQuantity,
+  increaseItemQuantity,
+  isValidPromoCode,
+} from '../../core/cart.ts';
 
 export const renderCartPage = (
   initialCartItems: CartItem[],
+  initialPromoCode: string | null,
   onRemove: (item: CartItem) => CartItem[],
+  onApplyPromo: (code: string) => void,
 ): HTMLElement => {
   let currentItems = initialCartItems;
+  let appliedPromoCode: string | null = initialPromoCode;
+
+  const cartDiscount = domHelper.createElement('div', {
+    className: 'cart-discount',
+  });
 
   const cartWrapper = domHelper.createElement('div', { className: 'cart-wrapper' });
 
@@ -20,11 +32,20 @@ export const renderCartPage = (
   });
 
   const updateCartSummary = (): void => {
-    const total = currentItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-    cartTotalPrice.textContent = `Total: $${total.toFixed(2)}`;
+    const isEmpty = currentItems.length === 0;
+    const { discountAmount, finalTotal } = calculateCartTotals(currentItems, appliedPromoCode);
 
-    cartMessage.style.display = currentItems.length === 0 ? 'block' : 'none';
-    cartTotalPrice.style.display = currentItems.length === 0 ? 'none' : 'block';
+    cartMessage.style.display = isEmpty ? 'block' : 'none';
+    cartTotalPrice.style.display = isEmpty ? 'none' : 'block';
+
+    if (!isEmpty && discountAmount > 0) {
+      cartDiscount.style.display = 'block';
+      cartDiscount.textContent = `Discount (10%): -$${discountAmount.toFixed(2)}`;
+    } else {
+      cartDiscount.style.display = 'none';
+    }
+
+    cartTotalPrice.textContent = `Total: $${finalTotal.toFixed(2)}`;
   };
 
   initialCartItems.forEach((item) => {
@@ -98,10 +119,16 @@ export const renderCartPage = (
     domHelper.appendChildToElement(cartWrapper, cartLine);
   });
 
+  domHelper.appendChildToElement(cartWrapper, cartDiscount);
   domHelper.appendChildToElement(cartWrapper, cartTotalPrice);
   domHelper.appendChildToElement(cartWrapper, cartMessage);
 
   updateCartSummary();
+  createCouponMarkup(cartWrapper, appliedPromoCode, (validCode) => {
+    appliedPromoCode = validCode;
+    onApplyPromo(validCode);
+    updateCartSummary();
+  });
 
   return cartWrapper;
 };
@@ -113,4 +140,48 @@ const updateRowUI = (
 ): void => {
   quantityElement.textContent = String(item.quantity);
   cartLineTotalPrice.textContent = `$${(item.product.price * item.quantity).toFixed(2)}`;
+};
+
+const createCouponMarkup = (
+  wrapper: HTMLElement,
+  initialPromoCode: string | null,
+  onApplyPromo: (code: string) => void,
+): void => {
+  const couponWrapper = domHelper.createElement('div', { className: 'coupon-wrapper' });
+  const couponInput = domHelper.createElement('input', {
+    className: 'coupon-input',
+    type: 'text',
+    value: initialPromoCode ?? '',
+    placeholder: 'Promo code',
+    ariaLabel: 'Promo code',
+  });
+  domHelper.appendChildToElement(couponWrapper, couponInput);
+
+  const applyCouponButton = domHelper.createElement('button', {
+    className: 'apply-coupon',
+    textContent: 'Apply',
+    type: 'button',
+  });
+  domHelper.appendChildToElement(couponWrapper, applyCouponButton);
+
+  const couponMessage = domHelper.createElement('div', {
+    className: 'coupon-message',
+    textContent: initialPromoCode
+      ? `Promo code ${initialPromoCode} applied!`
+      : 'Enter the promo-code',
+  });
+  domHelper.appendChildToElement(couponWrapper, couponMessage);
+
+  applyCouponButton.addEventListener('click', () => {
+    const code = couponInput.value.trim().toUpperCase();
+
+    if (isValidPromoCode(code)) {
+      couponMessage.textContent = 'Promo code SALE10 applied!';
+      onApplyPromo(code);
+    } else {
+      couponMessage.textContent = 'Invalid promo code';
+    }
+  });
+
+  domHelper.appendChildToElement(wrapper, couponWrapper);
 };
