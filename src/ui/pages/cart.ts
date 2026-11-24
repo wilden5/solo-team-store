@@ -102,6 +102,7 @@ export const renderCartPage = (
   domHelper.appendChildToElement(cartWrapper, cartMessage);
 
   updateCartSummary();
+  createCouponMarkup(cartWrapper);
 
   return cartWrapper;
 };
@@ -113,4 +114,29 @@ const updateRowUI = (
 ): void => {
   quantityElement.textContent = String(item.quantity);
   cartLineTotalPrice.textContent = `$${(item.product.price * item.quantity).toFixed(2)}`;
+};
+
+const createCouponMarkup = (wrapper: HTMLElement) => {
+  const couponWrapper = domHelper.createElement('div', { className: 'coupon-wrapper' });
+  const couponInput = domHelper.createElement('input', {
+    className: 'coupon-input',
+    type: 'text',
+  });
+  domHelper.appendChildToElement(couponWrapper, couponInput);
+
+  const applyCouponButton = domHelper.createElement('button', {
+    className: 'apply-coupon',
+    textContent: 'Apply',
+    type: 'button',
+  });
+  domHelper.appendChildToElement(couponWrapper, applyCouponButton);
+  applyCouponButton.addEventListener('click', () => {});
+
+  const couponMessage = domHelper.createElement('div', {
+    className: 'coupon-message',
+    textContent: 'Enter the promo-code',
+  });
+  domHelper.appendChildToElement(couponWrapper, couponMessage);
+
+  domHelper.appendChildToElement(wrapper, couponWrapper);
 };
