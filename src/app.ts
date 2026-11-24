@@ -7,7 +7,7 @@ import { renderCatalogPage } from './ui/pages/catalog.ts';
 import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
 import { renderCartPage } from './ui/pages/cart.ts';
 import type { CartItem } from './types/cart.ts';
-import { addToCart } from './core/cart.ts';
+import { addToCart, removeFromCart } from './core/cart.ts';
 
 export class App {
   private readonly root: HTMLElement;
@@ -53,7 +53,9 @@ export class App {
         );
         break;
       case 'cart':
-        this.renderPage(renderCartPage(this.cartItems));
+        this.renderPage(
+          renderCartPage(this.cartItems, (item: CartItem) => this.handleRemoveItem(item)),
+        );
         break;
       default:
         this.renderPage(renderAboutUsPage((route: string) => this.navigate(route)));
@@ -96,5 +98,10 @@ export class App {
     if (this.currentRoute === 'catalog') {
       this.navigate('catalog');
     }
+  }
+
+  private handleRemoveItem(itemToRemove: CartItem): CartItem[] {
+    this.cartItems = removeFromCart(itemToRemove, this.cartItems);
+    return this.cartItems;
   }
 }
