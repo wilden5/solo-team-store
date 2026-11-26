@@ -51,8 +51,25 @@ export const renderCatalogPage = (
   errorMessage: string | null,
   onRetry: () => void,
   onAddToCart: (product: Product) => void,
+  onFilterProducts: (filterValue: string) => Product[],
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
+
+  const filterInput = domHelper.createElement('input', {
+    className: 'filter-input',
+    type: 'text',
+    placeholder: 'Search...',
+  });
+  domHelper.appendChildToElement(container, filterInput);
+
+  let listWrapper = createProductList(products, onAddToCart);
+
+  filterInput.addEventListener('input', () => {
+    const filtered = onFilterProducts(filterInput.value);
+    const newListWrapper = createProductList(filtered, onAddToCart);
+    listWrapper.replaceWith(newListWrapper);
+    listWrapper = newListWrapper;
+  });
 
   switch (currentStatus) {
     case 'loading':
@@ -60,10 +77,11 @@ export const renderCatalogPage = (
       break;
     case 'error':
       domHelper.appendChildToElement(container, createErrorContent(errorMessage, onRetry));
-      domHelper.appendChildToElement(container, createProductList(products, onAddToCart));
+      domHelper.appendChildToElement(container, listWrapper);
       break;
     case 'loaded':
-      domHelper.appendChildToElement(container, createProductList(products, onAddToCart));
+      domHelper.appendChildToElement(container, listWrapper);
+      break;
   }
 
   return container;
