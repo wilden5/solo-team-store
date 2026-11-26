@@ -8,6 +8,7 @@ import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
 import { renderCartPage } from './ui/pages/cart.ts';
 import type { CartItem } from './types/cart.ts';
 import { addToCart, removeFromCart } from './core/cart.ts';
+import { filterProducts } from './core/filters.ts';
 
 export class App {
   private readonly root: HTMLElement;
@@ -50,6 +51,7 @@ export class App {
             this.errorMessage,
             () => this.loadProducts(),
             (product: Product) => (this.cartItems = addToCart(this.cartItems, product)),
+            (query: string) => filterProducts(this.products, query),
           ),
         );
         break;
