@@ -45,6 +45,33 @@ const createProductList = (
   return productCardsWrapper;
 };
 
+const createCategoryButtons = (
+  products: Product[],
+  onSelectCategory: (category: string) => void,
+): HTMLElement => {
+  const buttonsWrapper = domHelper.createElement('div', { className: 'catalog-buttons' });
+
+  const categories: string[] = [
+    'all-categories',
+    ...new Set(products.map((product) => product.category)),
+  ];
+
+  categories.forEach((category) => {
+    const button = domHelper.createElement('button', {
+      className: `${category}-button`,
+      textContent: category,
+      type: 'button',
+    });
+    domHelper.appendChildToElement(buttonsWrapper, button);
+
+    button.addEventListener('click', () => {
+      onSelectCategory(category);
+    });
+  });
+
+  return buttonsWrapper;
+};
+
 export const renderCatalogPage = (
   currentStatus: ProductStatus,
   products: Product[],
@@ -52,6 +79,7 @@ export const renderCatalogPage = (
   onRetry: () => void,
   onAddToCart: (product: Product) => void,
   onFilterProducts: (filterValue: string) => Product[],
+  onSelectCategory: (category: string) => Product[],
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
 
@@ -63,13 +91,23 @@ export const renderCatalogPage = (
   });
   domHelper.appendChildToElement(container, filterInput);
 
+  const categoryButtons = createCategoryButtons(products, (selectedCategory) => {
+    const filtered = onSelectCategory(selectedCategory);
+    updateProductList(filtered);
+  });
+  domHelper.appendChildToElement(container, categoryButtons);
+
   let listWrapper = createProductList(products, onAddToCart);
+
+  const updateProductList = (filteredProducts: Product[]): void => {
+    const newListWrapper = createProductList(filteredProducts, onAddToCart);
+    listWrapper.replaceWith(newListWrapper);
+    listWrapper = newListWrapper;
+  };
 
   filterInput.addEventListener('input', () => {
     const filtered = onFilterProducts(filterInput.value);
-    const newListWrapper = createProductList(filtered, onAddToCart);
-    listWrapper.replaceWith(newListWrapper);
-    listWrapper = newListWrapper;
+    updateProductList(filtered);
   });
 
   switch (currentStatus) {
