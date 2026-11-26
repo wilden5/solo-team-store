@@ -2,6 +2,13 @@ import type { Product, ProductStatus } from '../../types/product.ts';
 import domHelper from '../../utils/dom-helper.ts';
 import { createProductCard } from '../components/product-card.ts';
 
+const ALL_CATEGORIES = 'all-categories';
+
+const formatCategoryLabel = (slug: string): string => {
+  const withSpaces = slug.replace(/-/g, ' ');
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+};
+
 const createSpinner = (): HTMLElement => {
   return domHelper.createElement('div', {
     className: 'catalog-spinner',
@@ -45,6 +52,33 @@ const createProductList = (
   return productCardsWrapper;
 };
 
+const createCategoryButtons = (
+  products: Product[],
+  onSelectCategory: (category: string) => void,
+): HTMLElement => {
+  const buttonsWrapper = domHelper.createElement('div', { className: 'catalog-buttons' });
+
+  const categories: string[] = [
+    ALL_CATEGORIES,
+    ...new Set(products.map((product) => product.category)),
+  ];
+
+  categories.forEach((category) => {
+    const button = domHelper.createElement('button', {
+      className: `${category}-button`,
+      textContent: formatCategoryLabel(category),
+      type: 'button',
+    });
+    domHelper.appendChildToElement(buttonsWrapper, button);
+
+    button.addEventListener('click', () => {
+      onSelectCategory(category);
+    });
+  });
+
+  return buttonsWrapper;
+};
+
 export const renderCatalogPage = (
   currentStatus: ProductStatus,
   products: Product[],
@@ -52,8 +86,13 @@ export const renderCatalogPage = (
   onRetry: () => void,
   onAddToCart: (product: Product) => void,
   onFilterProducts: (filterValue: string) => Product[],
+  onSelectCategory: (category: string) => Product[],
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
+
+  let currentQuery = '';
+  let currentCategory = ALL_CATEGORIES;
+  let listWrapper = createProductList(products, onAddToCart);
 
   const filterInput = domHelper.createElement('input', {
     className: 'filter-input',
@@ -63,13 +102,26 @@ export const renderCatalogPage = (
   });
   domHelper.appendChildToElement(container, filterInput);
 
-  let listWrapper = createProductList(products, onAddToCart);
+  const categoryButtons = createCategoryButtons(products, (selectedCategory) => {
+    currentCategory = selectedCategory;
+    updateProductList();
+  });
+  domHelper.appendChildToElement(container, categoryButtons);
 
-  filterInput.addEventListener('input', () => {
-    const filtered = onFilterProducts(filterInput.value);
-    const newListWrapper = createProductList(filtered, onAddToCart);
+  const updateProductList = (): void => {
+    const byQuery = onFilterProducts(currentQuery);
+    const byCategory = onSelectCategory(currentCategory);
+
+    const combined = byQuery.filter((product) => byCategory.includes(product));
+
+    const newListWrapper = createProductList(combined, onAddToCart);
     listWrapper.replaceWith(newListWrapper);
     listWrapper = newListWrapper;
+  };
+
+  filterInput.addEventListener('input', () => {
+    currentQuery = filterInput.value;
+    updateProductList();
   });
 
   switch (currentStatus) {

@@ -9,3 +9,11 @@ export const filterProducts = (products: Product[], query: string): Product[] =>
 
   return products.filter((product) => product.title.toLowerCase().includes(normalizedQuery));
 };
+
+export const filterProductsByCategory = (products: Product[], category: string): Product[] => {
+  if (category === 'all-categories') {
+    return products;
+  }
+
+  return products.filter((product) => product.category === category);
+};
