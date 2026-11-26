@@ -59,6 +59,7 @@ export const renderCatalogPage = (
     className: 'filter-input',
     type: 'text',
     placeholder: 'Search...',
+    ariaLabel: 'Search',
   });
   domHelper.appendChildToElement(container, filterInput);
 

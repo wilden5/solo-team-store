@@ -8,13 +8,13 @@ import { FALLBACK_PRODUCTS } from './mocks/fallback-products.ts';
 import { renderCartPage } from './ui/pages/cart.ts';
 import type { CartItem } from './types/cart.ts';
 import { addToCart, removeFromCart } from './core/cart.ts';
+import { filterProducts } from './core/filters.ts';
 
 export class App {
   private readonly root: HTMLElement;
   private readonly mainContainer: HTMLElement;
   private readonly headerElement: HTMLElement;
   private products: Product[] = [];
-  private filteredProducts: Product[] = [];
   private productsStatus: ProductStatus = 'loading';
   private errorMessage: string | null = null;
   private currentRoute: string = '';
@@ -51,7 +51,7 @@ export class App {
             this.errorMessage,
             () => this.loadProducts(),
             (product: Product) => (this.cartItems = addToCart(this.cartItems, product)),
-            (searchValue: string) => this.filterProductList(searchValue),
+            (query: string) => filterProducts(this.products, query),
           ),
         );
         break;
@@ -92,13 +92,11 @@ export class App {
 
     try {
       this.products = await fetchAllProducts();
-      this.filteredProducts = this.products;
       this.productsStatus = 'loaded';
     } catch (error) {
       this.productsStatus = 'error';
       this.errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.products = FALLBACK_PRODUCTS;
-      this.filteredProducts = this.products;
     } finally {
       this.refreshCatalogIfActive();
     }
@@ -114,16 +112,4 @@ export class App {
     this.cartItems = removeFromCart(itemToRemove, this.cartItems);
     return this.cartItems;
   }
-
-  private filterProductList = (searchValue: string): Product[] => {
-    console.log(searchValue);
-    console.log(this.filteredProducts);
-    const query = searchValue.trim().toLowerCase();
-
-    this.filteredProducts = this.products.filter((product) =>
-      product.title.toLowerCase().includes(query),
-    );
-
-    return this.filteredProducts;
-  };
 }
