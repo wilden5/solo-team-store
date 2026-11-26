@@ -2,6 +2,13 @@ import type { Product, ProductStatus } from '../../types/product.ts';
 import domHelper from '../../utils/dom-helper.ts';
 import { createProductCard } from '../components/product-card.ts';
 
+const ALL_CATEGORIES = 'all-categories';
+
+const formatCategoryLabel = (slug: string): string => {
+  const withSpaces = slug.replace(/-/g, ' ');
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+};
+
 const createSpinner = (): HTMLElement => {
   return domHelper.createElement('div', {
     className: 'catalog-spinner',
@@ -52,14 +59,14 @@ const createCategoryButtons = (
   const buttonsWrapper = domHelper.createElement('div', { className: 'catalog-buttons' });
 
   const categories: string[] = [
-    'all-categories',
+    ALL_CATEGORIES,
     ...new Set(products.map((product) => product.category)),
   ];
 
   categories.forEach((category) => {
     const button = domHelper.createElement('button', {
       className: `${category}-button`,
-      textContent: category,
+      textContent: formatCategoryLabel(category),
       type: 'button',
     });
     domHelper.appendChildToElement(buttonsWrapper, button);
@@ -83,6 +90,10 @@ export const renderCatalogPage = (
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
 
+  let currentQuery = '';
+  let currentCategory = ALL_CATEGORIES;
+  let listWrapper = createProductList(products, onAddToCart);
+
   const filterInput = domHelper.createElement('input', {
     className: 'filter-input',
     type: 'text',
@@ -92,22 +103,25 @@ export const renderCatalogPage = (
   domHelper.appendChildToElement(container, filterInput);
 
   const categoryButtons = createCategoryButtons(products, (selectedCategory) => {
-    const filtered = onSelectCategory(selectedCategory);
-    updateProductList(filtered);
+    currentCategory = selectedCategory;
+    updateProductList();
   });
   domHelper.appendChildToElement(container, categoryButtons);
 
-  let listWrapper = createProductList(products, onAddToCart);
+  const updateProductList = (): void => {
+    const byQuery = onFilterProducts(currentQuery);
+    const byCategory = onSelectCategory(currentCategory);
 
-  const updateProductList = (filteredProducts: Product[]): void => {
-    const newListWrapper = createProductList(filteredProducts, onAddToCart);
+    const combined = byQuery.filter((product) => byCategory.includes(product));
+
+    const newListWrapper = createProductList(combined, onAddToCart);
     listWrapper.replaceWith(newListWrapper);
     listWrapper = newListWrapper;
   };
 
   filterInput.addEventListener('input', () => {
-    const filtered = onFilterProducts(filterInput.value);
-    updateProductList(filtered);
+    currentQuery = filterInput.value;
+    updateProductList();
   });
 
   switch (currentStatus) {
