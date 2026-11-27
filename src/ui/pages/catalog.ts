@@ -79,6 +79,35 @@ const createCategoryButtons = (
   return buttonsWrapper;
 };
 
+const createPriceFilters = (onPriceChange: (from: string, to: string) => void): HTMLElement => {
+  const filterWrapper = domHelper.createElement('div', { className: 'filter-wrapper' });
+  const startPrice = domHelper.createElement('input', {
+    className: 'start-price-input',
+    type: 'number',
+    placeholder: 'From, $',
+    min: '0',
+    ariaLabel: 'From Price',
+  });
+  domHelper.appendChildToElement(filterWrapper, startPrice);
+  const endPrice = domHelper.createElement('input', {
+    className: 'end-price-input',
+    type: 'number',
+    placeholder: 'To, $',
+    min: '0',
+    ariaLabel: 'To Price',
+  });
+  domHelper.appendChildToElement(filterWrapper, endPrice);
+
+  const handlePriceInput = () => {
+    onPriceChange(startPrice.value, endPrice.value);
+  };
+
+  startPrice.addEventListener('input', handlePriceInput);
+  endPrice.addEventListener('input', handlePriceInput);
+
+  return filterWrapper;
+};
+
 export const renderCatalogPage = (
   currentStatus: ProductStatus,
   products: Product[],
@@ -87,11 +116,14 @@ export const renderCatalogPage = (
   onAddToCart: (product: Product) => void,
   onFilterProducts: (filterValue: string) => Product[],
   onSelectCategory: (category: string) => Product[],
+  onFilterByPrice: (from: string, to: string) => Product[],
 ): HTMLElement => {
   const container = domHelper.createElement('div', { className: 'catalog-page' });
 
   let currentQuery = '';
   let currentCategory = ALL_CATEGORIES;
+  let currentFrom = '';
+  let currentTo = '';
   let listWrapper = createProductList(products, onAddToCart);
 
   const filterInput = domHelper.createElement('input', {
@@ -111,8 +143,11 @@ export const renderCatalogPage = (
   const updateProductList = (): void => {
     const byQuery = onFilterProducts(currentQuery);
     const byCategory = onSelectCategory(currentCategory);
+    const byPrice = onFilterByPrice(currentFrom, currentTo);
 
-    const combined = byQuery.filter((product) => byCategory.includes(product));
+    const combined = byQuery.filter(
+      (product) => byCategory.includes(product) && byPrice.includes(product),
+    );
 
     const newListWrapper = createProductList(combined, onAddToCart);
     listWrapper.replaceWith(newListWrapper);
@@ -123,6 +158,13 @@ export const renderCatalogPage = (
     currentQuery = filterInput.value;
     updateProductList();
   });
+
+  const priceFilters = createPriceFilters((from, to) => {
+    currentFrom = from;
+    currentTo = to;
+    updateProductList();
+  });
+  domHelper.appendChildToElement(container, priceFilters);
 
   switch (currentStatus) {
     case 'loading':
