@@ -17,3 +17,17 @@ export const filterProductsByCategory = (products: Product[], category: string):
 
   return products.filter((product) => product.category === category);
 };
+
+export const filterByPrice = (
+  products: Product[],
+  fromValue: string,
+  toValue: string,
+): Product[] => {
+  const parsedMin = Number(fromValue);
+  const parsedMax = Number(toValue);
+
+  const minPrice = fromValue.trim() === '' || Number.isNaN(parsedMin) ? -Infinity : parsedMin;
+  const maxPrice = toValue.trim() === '' || Number.isNaN(parsedMax) ? Infinity : parsedMax;
+
+  return products.filter(({ price }) => price >= minPrice && price <= maxPrice);
+};
